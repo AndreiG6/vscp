@@ -24,6 +24,9 @@ use warnings;
 # Interval in seconds for /etc/userdatadomains checks
 my $userdata_poll_frequency = "60";
 
+# Print piped requests to STDOUT
+my $debug = '0';
+
 # Custom Port header set in Varnish for the request target (usually 80/443).
 # It's is mainly used for differentiating SSL downgraded requests.
 my $varnish_port_header = 'X-Port';
@@ -65,7 +68,6 @@ my $split_bytes =
   or die "Couldn't fork: $!\n";
 my %domlogs;
 my $loaded_md5 = "";
-my $debug      = '0';
 my $check_time = time();
 
 print localtime()." Listening for requests to parse and relay..\n";
