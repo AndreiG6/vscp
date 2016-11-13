@@ -34,6 +34,7 @@ sub vcl_recv {
         set req.http.X-Forwarded-For = req.http.X-Real-IP;
     } else {
         set req.http.X-Forwarded-For = client.ip;
+        set req.http.X-Real-IP = req.http.X-Forwarded-For;
     }
 }
 ```
