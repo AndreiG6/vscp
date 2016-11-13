@@ -54,7 +54,7 @@ if ( !$piped_logging ) {
 use Sys::Hostname;
 my $host      = hostname;
 my $vncsa_pid = open( VNCSA,
-'varnishncsa -F "%{Varnish:hitmiss}x:::%b:::%{HOST}i:::%{X-Port}i %{X-Real-IP}i %l %u %t \"%m %U%q %H\" %s %b \"%{Referer}i\" \"%{User-agent}i\"" |'
+'varnishncsa -q "HIT" -F "%b:::%{HOST}i:::%{X-Port}i %{X-Real-IP}i %l %u %t \"%m %U%q %H\" %s %b \"%{Referer}i\" \"%{User-agent}i\"" |'
 ) or die "Couldn't fork: $!\n";
 my $split_logs = open( SPLITLOGS,
 "| /usr/local/cpanel/bin/splitlogs --main=${host} --mainout=/usr/local/apache/logs/access_log"
@@ -68,12 +68,13 @@ my $loaded_md5 = "";
 my $debug      = '0';
 my $check_time = time();
 
+print localtime()." Listening for requests to parse and relay..\n";
 while (<VNCSA>) {
     chomp $_;
     &get_userdata;
-    my ( $hit, $bytes, $domain, $rlog ) = split /:::/, $_;
+    my ( $bytes, $domain, $rlog ) = split /:::/, $_;
     my $domlog = &get_log($domain);
-    if ( ($domlog) && ( $hit =~ /hit/ ) ) {
+    if ($domlog) {
         print "TOLOGPIPE: $domlog:$rlog\n" if ($debug);
         print SPLITLOGS "$domlog:$rlog\n";
         print "TOBYTEPIPE: $domlog $bytes .\n" if ($debug);
