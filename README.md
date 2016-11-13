@@ -1,6 +1,6 @@
-# vscp.pl - Varnishncsa parse and pipe to cPanel splitlogs
+# vscp.pl - Varnish Stats to cPanel
 
-vscp.pl is used to relay requests between varnishncsa and cPanel's splitlogs binary for domlog and bytelog writeouts. This helps cPanel track bandwidth usage, and include previously missed cache hits in statistical log processing. Such as Logaholic, AWStats, Webalizer, etc.
+vscp.pl is used to relay cache hit requests between varnishncsa and cPanel's splitlogs binary for domlog and bytelog writeouts of traffic which otherwise went unseen. This helps cPanel track bandwidth usage, and include previously missed cache hits in statistical log processing. Such as Logaholic, AWStats, Webalizer, etc.
 
 Requirements:
 - Varnish already installed
