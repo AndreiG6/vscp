@@ -37,3 +37,24 @@ sub vcl_recv {
     }
 }
 ```
+#Usage:
+
+- Make sure piped logging is enabled in WHM (WHM >> Service Configuration >> Apache Configuration >> Piped Log Configuration) - https://documentation.cpanel.net/display/ALD/Apache+Configuration?piped
+
+- Open vscp.pl, change variables below to enable request debugging, set the IP/Port headers to match your environment, and set the user domains refresh frequency.
+```
+# Interval in seconds for /etc/userdatadomains checks
+my $userdata_poll_frequency = "60";
+
+# Print piped requests to STDOUT
+my $debug = '0';
+
+# Custom Port header set in Varnish for the request target (usually 80/443).
+# It's is mainly used for differentiating SSL downgraded requests.
+my $varnish_port_header = 'X-Port';
+
+# Client IP header set in Varnish. Usually X-Forwarded-For (beware of multiple IP entries if using the default xforwardedfor)
+my $varnish_ip_header = 'X-Real-IP';
+
+```
+- Once the settings are in place, either open a ```screen``` and run ```perl vscp.pl```, or fork it to the background using ```perl vscp.pl &```
