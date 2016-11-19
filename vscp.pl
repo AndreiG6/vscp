@@ -66,7 +66,7 @@ my $split_bytes =
   open( SPLITBYTES,
     "| /usr/local/cpanel/bin/splitlogs --main=${host} --suffix=-bytes_log" )
   or die "Couldn't fork: $!\n";
-my %domlogs;
+my (%ips,%domlogs);
 my $loaded_md5 = "";
 my $check_time = time();
 
@@ -126,6 +126,30 @@ sub get_userdata() {
             else {
                 $domlogs{$udom} = $udom;
             }
+        }
+    }
+
+    # Set domlogs for IP based requests, going by the first VirtualHost entry (mimic Apache behavior)
+    my %by_ip;
+    my ($ip,$port,$sname);
+    chomp(my $http = `grep ^apache_port /var/cpanel/cpanel.config|cut -d: -f2`);
+    chomp(my $https_port = `grep ^apache_ssl_port /var/cpanel/cpanel.config|cut -d: -f2`);
+    open( my $ap_scan,'-|', "egrep -A1 \"<VirtualHost .*:($http|$https_port)\" /etc/httpd/conf/httpd.conf" ) or die $!;
+    while (my $apdata = <$ap_scan> ) {
+        chomp $apdata;
+        if ($apdata =~ /<VirtualHost (\d{1,3}\.){3}\d{1,3}:/m) {
+            (my $bind) = ($apdata =~ /(?<=Host ).*(?=\>)/g);
+            ($ip,$port) = split /:/,$bind;
+        }
+        if ($apdata =~ /ServerName/m) {
+            ($sname) = ($apdata =~ /(?<=ServerName ).*/g);
+        }
+        if (($ip) && ($sname)) {
+            if (!$by_ip{$ip}) {
+                $by_ip{$ip} = $domlogs{$sname};
+                $domlogs{$ip} = $domlogs{$sname};
+            }
+            ($ip,$sname) = ();
         }
     }
     $loaded_md5 = $check_md5;
