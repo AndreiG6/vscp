@@ -66,7 +66,7 @@ my $split_bytes =
   open( SPLITBYTES,
     "| /usr/local/cpanel/bin/splitlogs --main=${host} --suffix=-bytes_log" )
   or die "Couldn't fork: $!\n";
-my (%ips,%domlogs);
+my %domlogs;
 my $loaded_md5 = "";
 my $check_time = time();
 
