@@ -57,7 +57,7 @@ if ( !$piped_logging ) {
 use Sys::Hostname;
 my $host      = hostname;
 my $vncsa_pid = open( VNCSA,
-'varnishncsa -q "HIT" -F "%b:::%{HOST}i:::%{X-Port}i %{X-Real-IP}i %l %u %t \"%m %U%q %H\" %s %b \"%{Referer}i\" \"%{User-agent}i\"" |'
+'varnishncsa -q "HIT" -F "%b:::%{HOST}i:::%{'.$varnish_port_header.'}i %{'.$varnish_ip_header.'}i %l %u %t \"%m %U%q %H\" %s %b \"%{Referer}i\" \"%{User-agent}i\"" |'
 ) or die "Couldn't fork: $!\n";
 my $split_logs = open( SPLITLOGS,
 "| /usr/local/cpanel/bin/splitlogs --main=${host} --mainout=/usr/local/apache/logs/access_log"
