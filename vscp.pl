@@ -34,6 +34,9 @@ my $varnish_port_header = 'X-Port';
 # Client IP header set in Varnish. Usually X-Forwarded-For (beware of multiple IP entries if using the default xforwardedfor)
 my $varnish_ip_header = 'X-Real-IP';
 
+# Service name for init.d
+$0 = "vscpd";
+
 chomp( my $piped_logging =
       `grep ^enable_piped_logs\=1 /var/cpanel/cpanel.config` );
 if ( !$piped_logging ) {

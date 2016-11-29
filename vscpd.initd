@@ -1,0 +1,92 @@
+#!/bin/sh
+# chkconfig:   345 95 5
+
+### BEGIN INIT INFO
+# Provides: vscp.pl
+# Required-Start: $local_fs
+# Required-Stop: $local_fs
+# Default-Start: 345
+# Default-Stop: 95
+# Short-Description: Manage the vscpd splitlogs service
+# Description: Manage the varnishncsa cache hits, to cPanel splitlogs service.
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+exec=/opt/vscp/vscp.pl
+prog="vscpd"
+
+[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+
+lockfile=/var/lock/subsys/$prog
+pidfile=/var/run/${prog}.pid
+
+start() {
+    [ -x $exec ] || exit 5
+    [ -f $lockfile ] && { echo "Lockfile exists, try restart.";exit; }
+    pidof=`pidof $prog`
+    echo -n $"Starting $prog: "
+    if [ "$pidof" ];then
+      echo "FAILED. Check running process (${pidof})."
+      exit 1
+    fi
+    $exec >/dev/null 2>&1 &
+    retval=$?
+    pid=$!
+    [ "$retval" = "0" ] && { touch $lockfile;echo $pid > $pidfile;echo "OK"; } || { echo "FAILED. (${retval})"; }
+}
+
+stop() {
+   echo -n $"Stopping $prog: "
+   if [ -e "$pidfile" ];then
+     pidof=`grep -oP '\d+' $pidfile`
+   else
+     pidof=`pidof $prog`
+   fi
+   if [[ "$pidof" = "`pidof $prog`" && "$pidof" ]];then
+    kill -9 $pidof
+    echo OK
+   else
+    echo "FAILED"
+   fi
+   rm -f $pidfile $lockfile
+}
+
+restart() {
+    stop
+    start
+}
+
+status() {
+  if [ -f "$pidfile" ];then
+    pidof=`grep -oP '\d+' $pidfile`
+    if [[ "$pidof" = "`pidof $prog`" && "$pidof" ]];then
+      echo "$prog is running. (${pidof})"
+    else
+      echo "$prog is stale. Removed lock and subsys."
+      rm -f $pidfile $lockfile
+    fi
+  else
+    echo "$prog is NOT running."
+  fi
+}
+
+case "$1" in
+    start)
+        $1
+        ;;
+    stop)
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    status)
+	$1
+	;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+        exit 2
+esac
+exit $?
