@@ -1,1 +1,1 @@
-service[vscpd]=,,,/etc/init.d/vscpd restart,root
+service[vscpd]=,,,service vscpd restart,vscpd,root
