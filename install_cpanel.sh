@@ -27,18 +27,15 @@ fi
 
 [[ -x "${vscpl}" ]] && chmod +x ${vscpl}
 
-if [ -f "/etc/init.d/vscpd" ];then
-  chmod 0 /etc/init.d/vscpd
-  \mv -f /etc/init.d/vscpd{,.old}
-fi
-cp vscpd.initd /etc/init.d/vscpd
+cat vscpd.initd > /etc/init.d/vscpd
 chmod +x /etc/init.d/vscpd
 chkconfig vscpd on
 
 if ! grep -q ^vscpd: /etc/chkserv.d/chkservd.conf;then
   sed -i "1i vscpd:1" /etc/chkserv.d/chkservd.conf
 fi
-echo 'service[vscpd]=,,,/etc/init.d/vscpd restart,root' > /etc/chkserv.d/vscpd
+
+cat vscpd.chkservd > /etc/chkserv.d/vscpd
 
 service vscpd restart
 /scripts/restartsrv_chkservd
