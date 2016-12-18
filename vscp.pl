@@ -69,6 +69,13 @@ my $split_bytes =
   open( SPLITBYTES,
     "| /usr/local/cpanel/bin/splitlogs --main=${host} --suffix=-bytes_log" )
   or die "Couldn't fork: $!\n";
+# Disable buffering
+$| = 1;
+select((select(VNCSA), $|=1)[0]);
+select((select(SPLITLOGS), $|=1)[0]);
+select((select(SPLITBYTES), $|=1)[0]);
+
+
 my %domlogs;
 my $loaded_md5 = "";
 my $check_time = time();
