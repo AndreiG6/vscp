@@ -58,4 +58,4 @@ my $varnish_port_header = 'X-Port';
 my $varnish_ip_header = 'X-Real-IP';
 
 ```
-- Once the settings are in place, either open a ```screen``` and run ```perl vscp.pl```, or fork it to the background using ```perl vscp.pl &```
+- Once the header variables are set to match your environment, ```cd vscp;./install_cpanel.sh```. This will create a new WHM Monitoring service (vscpd), and start the log processing daemon.
