@@ -62,8 +62,9 @@ my $host      = hostname;
 my $vncsa_pid = open( VNCSA,
 'varnishncsa -q "HIT" -F "%b:::%{HOST}i:::%{'.$varnish_port_header.'}i %{'.$varnish_ip_header.'}i %l %u %t \"%m %U%q %H\" %s %b \"%{Referer}i\" \"%{User-agent}i\"" |'
 ) or die "Couldn't fork: $!\n";
+my $access_log = ( -f "/etc/cpanel/ea4/is_ea4" ) ? "/etc/apache2/logs/access_log" : "/usr/local/apache/logs/access_log";
 my $split_logs = open( SPLITLOGS,
-"| /usr/local/cpanel/bin/splitlogs --main=${host} --mainout=/usr/local/apache/logs/access_log"
+"| /usr/local/cpanel/bin/splitlogs --main=${host} --mainout=${access_log}"
 ) or die "Couldn't fork: $!\n";
 my $split_bytes =
   open( SPLITBYTES,
